@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <Button
+        android:id="@+id/browseAlbum"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Browse Album"
+        android:textAllCaps="false" />
+
+    <Button
+        android:id="@+id/addImageToAlbum"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Add Image To Album"
+        android:textAllCaps="false" />
+    <Button
+        android:id="@+id/deleteImageToAlbum"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="delete Image From Album"
+        android:textAllCaps="false" />
+
+
+    <Button
+        android:id="@+id/downloadFile"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Download File"
+        android:textAllCaps="false" />
+
+    <Button
+        android:id="@+id/pickFile"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Pick File"
+        android:textAllCaps="false" />
+
+
+    <Button
+        android:id="@+id/importImageToDownLoad"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:text="导入图片到download目录"
+        android:textAllCaps="false" />
+    <Button
+        android:id="@+id/deleteImageFromDownLoad"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="删除图片从download目录"
+        android:textAllCaps="false" />
+
+</LinearLayout>
