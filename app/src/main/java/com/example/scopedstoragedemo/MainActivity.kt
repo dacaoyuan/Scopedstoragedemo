@@ -315,7 +315,7 @@ class MainActivity : AppCompatActivity() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             val filePath =
                 Environment.DIRECTORY_DOWNLOADS + File.separator + BuildConfig.APPLICATION_ID + "/pactera/com/TestFile/"
-            val queryPathKey = MediaStore.MediaColumns.DISPLAY_NAME;
+            val queryPathKey = MediaStore.MediaColumns.RELATIVE_PATH;
 
             val cursor = contentResolver.query(
                 MediaStore.Downloads.EXTERNAL_CONTENT_URI,
