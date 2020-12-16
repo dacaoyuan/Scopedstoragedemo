@@ -3,6 +3,7 @@ package com.example.scopedstoragedemo
 import android.Manifest
 import android.app.Activity
 import android.app.RecoverableSecurityException
+import android.content.ContentResolver
 import android.content.ContentUris
 import android.content.ContentValues
 import android.content.Intent
@@ -100,7 +101,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         deleteImageFromDownLoad.setOnClickListener {
-            deleteImageFromDownLoad();
+            deleteImageFromDownLoad2();
         }
     }
 
@@ -120,8 +121,10 @@ class MainActivity : AppCompatActivity() {
             if (cursor != null) {
                 Log.e("ypkTest", "cursor is ");
                 while (cursor.moveToNext()) {
-                    val id = cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Images.Media._ID))
-                    val uri = ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, id)
+                    val id =
+                        cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Images.Media._ID))
+                    val uri =
+                        ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, id)
                     println("ypkTest.deleteFil11e uri=${uri.toString()}")
                     deleteDealWith(uri);
                 }
@@ -129,18 +132,20 @@ class MainActivity : AppCompatActivity() {
                 Log.e("ypkTest", "cursor is null");
             }
 
-           /* val where = MediaStore.Images.Media.DISPLAY_NAME + "='" + imageFileName + "'"
-            //测试发现，只有是自己应用插入的图片，才可以删除。其他应用的Uri，无法删除。卸载app后，再去删除图片，此方法不会抛出SecurityException异常
-            val result = contentResolver.delete(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, where, null)
-            Log.i("ypkTest", "deleteImageFromAlbum1 result=${result}");
-            if (result > 0) {
-                Toast.makeText(this, "delete sucess", Toast.LENGTH_LONG).show()
-            }*/
+            /* val where = MediaStore.Images.Media.DISPLAY_NAME + "='" + imageFileName + "'"
+             //测试发现，只有是自己应用插入的图片，才可以删除。其他应用的Uri，无法删除。卸载app后，再去删除图片，此方法不会抛出SecurityException异常
+             val result = contentResolver.delete(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, where, null)
+             Log.i("ypkTest", "deleteImageFromAlbum1 result=${result}");
+             if (result > 0) {
+                 Toast.makeText(this, "delete sucess", Toast.LENGTH_LONG).show()
+             }*/
 
         } else {
-            val filePath = "${Environment.getExternalStorageDirectory().path}/${Environment.DIRECTORY_DCIM}/$imageFileName";
+            val filePath =
+                "${Environment.getExternalStorageDirectory().path}/${Environment.DIRECTORY_DCIM}/$imageFileName";
             val where = MediaStore.Images.Media.DATA + "='" + filePath + "'"
-            val result = contentResolver.delete(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, where, null)
+            val result =
+                contentResolver.delete(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, where, null)
             Log.i("ypkTest", "result=${result}");
             if (result > 0) {
                 Toast.makeText(this, "delete sucess", Toast.LENGTH_LONG).show()
@@ -259,7 +264,7 @@ class MainActivity : AppCompatActivity() {
 
             val filePath =
                 Environment.DIRECTORY_DOWNLOADS + File.separator + BuildConfig.APPLICATION_ID + "/pactera/com/TestFile/"
-            val queryPathKey = MediaStore.MediaColumns.RELATIVE_PATH;
+            val queryPathKey = MediaStore.Downloads.RELATIVE_PATH;
             val cursor = contentResolver.query(
                 MediaStore.Downloads.EXTERNAL_CONTENT_URI,
                 null,
@@ -289,8 +294,8 @@ class MainActivity : AppCompatActivity() {
 
 
             val values = ContentValues()
-            values.put(MediaStore.MediaColumns.DISPLAY_NAME, fileName)
-            values.put(MediaStore.MediaColumns.RELATIVE_PATH, filePath)
+            values.put(MediaStore.DownloadColumns.DISPLAY_NAME, fileName)
+            values.put(MediaStore.DownloadColumns.RELATIVE_PATH, filePath)
             val uri = contentResolver.insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, values)
             if (uri != null) {
                 val outputStream = contentResolver.openOutputStream(uri)
@@ -308,7 +313,84 @@ class MainActivity : AppCompatActivity() {
 
     }
 
+    //用来测试删除文件夹的方法，可先不要删除，暂无合适的解决方案
+    private fun deleteImageFromDownLoad4() {
+          //  /pactera/com/TestFile/
+        val fileName = "123456789ypk.jpg"
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            val filePath = Environment.DIRECTORY_DOWNLOADS + File.separator + BuildConfig.APPLICATION_ID + "/pactera/com/"
+            /*
+             val queryPathKey = MediaStore.Files.FileColumns.RELATIVE_PATH;
+             val queryPathKey2 = MediaStore.Files.FileColumns.DISPLAY_NAME;
 
+             val where = "$queryPathKey = ?"
+             //val where = "$queryPathKey = ? and $queryPathKey2 = ? "
+             val result = contentResolver.delete(
+                 MediaStore.Files.getContentUri("external"),
+                 where,
+                 arrayOf(filePath)
+             )
+             Log.i("ypkTest", "deleteImageFromAlbum1 result=${result}");
+             if (result > 0) {
+                 Toast.makeText(this, "delete sucess", Toast.LENGTH_LONG).show()
+             }*/
+
+            var projection: Array<String?>? = null
+
+            val selection: String
+
+            val selectionArgs: Array<String>
+
+            projection =
+                arrayOf(MediaStore.Files.FileColumns._ID, MediaStore.Files.FileColumns.TITLE)
+
+            /* selection = MediaStore.Files.FileColumns.DATA + " like ?"
+             selectionArgs = arrayOf("%" + "TestFile" + "/%")*/
+
+            selection = MediaStore.Files.FileColumns.PARENT + " =?";
+            selectionArgs = arrayOf("1375903")
+
+            /*var external: Uri? = null
+            for (volumeName in MediaStore.getExternalVolumeNames(this)) {
+                external = MediaStore.Files.getContentUri(volumeName)
+                println("MainActivity.deleteImageFromDownLoad3 volumeName=" + volumeName)
+                break
+            }*/
+
+            val external = MediaStore.Files.getContentUri("external")
+            var cursor = contentResolver.query(
+                external,
+                null,
+                selection,
+                selectionArgs,
+                null
+            );
+
+            while (cursor!!.moveToNext()) {
+                val id = cursor.getLong(cursor.getColumnIndex(MediaStore.Files.FileColumns._ID));
+                val uri = ContentUris.withAppendedId(external, id);
+                println("ypkTest MainActivity.deleteImageFromDownLoad3 uri=$uri")
+
+
+                val strPARENT = cursor.getString(cursor.getColumnIndex(MediaStore.Files.FileColumns.PARENT));
+                val uriPARENT = ContentUris.withAppendedId(external, strPARENT.toLong());
+                println("ypkTest MainActivity.deleteImageFromDownLoad3 uriPARENT=$uriPARENT")
+
+                var result = contentResolver.delete(uri, null, null)
+                Log.i("ypkTest", "deleteImageFromAlbum1 result=${result}");
+                if (result > 0) {
+                    Toast.makeText(this, "delete sucess", Toast.LENGTH_LONG).show()
+                }
+            }
+
+
+        }
+
+
+    }
+
+
+    //指定删除 xx目录下的xx文件
     private fun deleteImageFromDownLoad() {
         val fileName = "123456789ypk.jpg"
 
@@ -392,6 +474,72 @@ class MainActivity : AppCompatActivity() {
 
 
     }
+
+    //指定删除 xx目录下的xx文件(推荐)
+    private fun deleteImageFromDownLoad2() {
+        val fileName = "123456789ypk.jpg"
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            val filePath =
+                Environment.DIRECTORY_DOWNLOADS + File.separator + BuildConfig.APPLICATION_ID + "/pactera/com/TestFile/"
+
+            val queryPathKey = MediaStore.DownloadColumns.RELATIVE_PATH;
+            val queryPathKey2 = MediaStore.DownloadColumns.DISPLAY_NAME;
+
+
+            //val queryPathKey3 = MediaStore.Files.FileColumns.PARENT;
+            val where = "$queryPathKey = ? and $queryPathKey2 = ? "
+            val result = contentResolver.delete(
+                MediaStore.Downloads.EXTERNAL_CONTENT_URI,
+                where,
+                arrayOf(filePath, fileName)
+            )
+            Log.i("ypkTest", "deleteImageFromAlbum1 result=${result}");
+            if (result > 0) {
+                Toast.makeText(this, "delete sucess", Toast.LENGTH_LONG).show()
+            }
+
+        }
+    }
+
+    /**
+     * //指定删除 外部储存(external)中的，所有xx文件
+     *
+     * 使用MediaStore.Files.getContentUri("external")
+     * 的方式，去删除文件，只知道文件名，就可以。
+     * 因为这是全局扫描，更简单一些。
+     *
+     */
+    private fun deleteImageFromDownLoad3() {
+        val fileName = "123456789ypk.jpg"
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            var projection: Array<String?>? =
+                arrayOf(MediaStore.Files.FileColumns._ID, MediaStore.Files.FileColumns.TITLE)
+
+            val selection: String = MediaStore.Files.FileColumns.DISPLAY_NAME + " = ?"
+            val selectionArgs: Array<String> = arrayOf(fileName)
+
+            val external = MediaStore.Files.getContentUri("external")
+            var cursor = contentResolver.query(
+                external,
+                null,
+                selection,
+                selectionArgs,
+                null
+            );
+
+            while (cursor!!.moveToNext()) {
+                val id = cursor.getLong(cursor.getColumnIndex(MediaStore.Files.FileColumns._ID));
+                val uri = ContentUris.withAppendedId(external, id);
+                println("ypkTest MainActivity.deleteImageFromDownLoad3 uri=$uri")
+                var result = contentResolver.delete(uri, null, null)
+                Log.i("ypkTest", "deleteImageFromAlbum1 result=${result}");
+                if (result > 0) {
+                    Toast.makeText(this, "delete sucess", Toast.LENGTH_LONG).show()
+                }
+            }
+        }
+    }
+
 
     override fun onRequestPermissionsResult(
         requestCode: Int,
@@ -511,7 +659,7 @@ class MainActivity : AppCompatActivity() {
                 deleteImageFromAlbum();
             }
             REQUEST_DELETE_DOWNLOAD_PERMISSION -> {
-                deleteImageFromDownLoad()
+                //deleteImageFromDownLoad()
             }
         }
     }
