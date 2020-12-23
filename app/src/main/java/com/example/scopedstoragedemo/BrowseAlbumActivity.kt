@@ -40,6 +40,7 @@ class BrowseAlbumActivity : AppCompatActivity() {
                 while (cursor.moveToNext()) {
                     val id = cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.MediaColumns._ID))
                     val uri = ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, id)
+                    println("BrowseAlbumActivity.loadImages uri=$uri")
                     imageList.add(uri)
                 }
                 cursor.close()

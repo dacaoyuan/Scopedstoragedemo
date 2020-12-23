@@ -79,7 +79,9 @@ class MainActivity : AppCompatActivity() {
         addImageToAlbum.setOnClickListener {
             val bitmap = BitmapFactory.decodeResource(resources, R.drawable.image)
             //val displayName = "${System.currentTimeMillis()}.jpg"
-            val displayName = "20201130ypk6667.jpg"
+            //val displayName = "20201130ypk6667.jpg"
+
+            val displayName = "11608686804500_黒板なし.jpg"
             val mimeType = "image/jpeg"
             val compressFormat = Bitmap.CompressFormat.JPEG
             addBitmapToAlbum(bitmap, displayName, mimeType, compressFormat)
@@ -107,7 +109,7 @@ class MainActivity : AppCompatActivity() {
 
 
     private fun deleteImageFromAlbum() {
-        val imageFileName = "20201130ypk6667.jpg"
+        val imageFileName = "11608686804500_黒板なし.jpg"
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
 
             val queryPathKey = MediaStore.MediaColumns.DISPLAY_NAME;
